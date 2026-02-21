@@ -1,0 +1,27 @@
+info:
+  name: update unit
+  type: http
+  seq: 6
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/v1/units/update/{{id}}"
+  body:
+    type: json
+    data: |-
+      {
+          "title": "Luxury 1BR update"
+
+      }
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: db9202f6-87fd-408e-a281-6f399e60739c
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

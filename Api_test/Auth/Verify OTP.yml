@@ -1,0 +1,22 @@
+info:
+  name: Verify OTP
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/auth/verify-otp"
+  body:
+    type: json
+    data: |
+      {
+        "email": "sabbirmridha880@gmail.com",
+        "otp": "926532"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

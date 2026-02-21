@@ -1,0 +1,26 @@
+info:
+  name: update-developer
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/v1/developers/update/{{id}}"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Update yo yo"
+      }
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: 83a3c834-5ab5-4be7-a57b-b5d2608dd010
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

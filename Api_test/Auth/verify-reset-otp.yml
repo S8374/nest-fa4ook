@@ -1,0 +1,22 @@
+info:
+  name: verify-reset-otp
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/auth/verify-reset-otp"
+  body:
+    type: json
+    data: |
+      {
+        "email": "sabbirmridha880@gmail.com",
+        "otp": "223833"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

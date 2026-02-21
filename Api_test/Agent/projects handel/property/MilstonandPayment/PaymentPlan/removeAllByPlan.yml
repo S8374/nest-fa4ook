@@ -1,0 +1,20 @@
+info:
+  name: removeAllByPlan
+  type: http
+  seq: 6
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/v1/milestones/plan/{{planId}}"
+  auth: inherit
+
+runtime:
+  variables:
+    - name: planId
+      value: 67669cbe-cf68-4c7e-a391-6f01018770e6
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

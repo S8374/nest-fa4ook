@@ -1,0 +1,7 @@
+info:
+  name: property-media
+  type: folder
+  seq: 4
+
+request:
+  auth: inherit

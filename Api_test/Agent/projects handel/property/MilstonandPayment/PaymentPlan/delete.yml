@@ -1,0 +1,20 @@
+info:
+  name: delete
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/v1/payment-plans/delete/{{id}}"
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: 04865928-a3ab-4ff5-9ad0-99f727e3bcbd
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

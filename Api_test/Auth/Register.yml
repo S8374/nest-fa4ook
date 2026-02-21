@@ -1,0 +1,39 @@
+info:
+  name: Register
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/auth/register"
+  body:
+    type: json
+    data: |-
+      {
+        "fullName": "John Doe",
+        "email": "0sabbimridha@gmail.com",
+        "password": "Password123!",
+        "nationality": "US",
+        "avatarUrl": "https://example.com/avatar.jpg",
+        "role": "BUYER",
+        "termsAndCondition": true
+      }
+
+      // {
+      //   "fullName": "Jane Smith",
+      //   "email": "sabbimridha880@gmail.com",
+      //   "password": "Password123!",
+      //   "nationality": "AE",
+      //   "avatarUrl": "https://example.com/agent-avatar.jpg",
+      //   "role": "AGENT",
+      //   "licenseNumber": 123456,
+      //   "ragaId": 789012,
+      //   "termsAndCondition": true
+      // }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

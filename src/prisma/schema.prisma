@@ -1,0 +1,550 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+//////////////////////////////
+// ENUMS
+//////////////////////////////
+
+enum Role {
+  AGENT
+  BUYER
+  ADMIN
+}
+
+enum UserStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  INACTIVE
+  DELETED
+  BANNED
+}
+
+enum PropertyStatus {
+  FOR_SALE
+  SOLD
+  PENDING
+}
+
+enum ListingPurpose {
+  SELL
+  RENT
+}
+
+enum ProjectStatus {
+  PLANNED
+  UNDER_CONSTRUCTION
+  COMPLETED
+}
+
+enum ProjectType {
+  GOLDEN_VISA
+  HIGH_YIELD
+  GIGA_PROJECT
+  OFF_PLAN
+  LUXURY
+  COMMERCIAL
+  RESIDENTIAL
+  MIXED_USE
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  VR_TOUR
+}
+
+enum KycStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum UnitStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+  RENTED
+  OFF_MARKET
+  UNDER_OFFER
+}
+
+enum MilestoneTrigger {
+  DATE_BASED
+  CONSTRUCTION_MILESTONE
+}
+
+enum MilestonePaymentStatus {
+  PENDING         
+  AGENT_REVIEWED    
+  VERIFIED          
+  REJECTED          
+}
+
+//////////////////////////////
+// USER & AUTH
+//////////////////////////////
+
+model User {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email       String  @unique
+  password    String?
+  phoneNumber String? @unique @map("phone_number")
+  fullName    String? @map("full_name")
+  avatarUrl   String? @map("avatar_url")
+  nationality String? @db.Char(2)
+
+  role       Role       @default(BUYER)
+  status     UserStatus @default(PENDING_VERIFICATION)
+  isVerified Boolean    @default(false)
+
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz
+
+  verifiedAt DateTime? @db.Timestamptz
+  lastLogin  DateTime? @db.Timestamptz
+
+  agentProfile     AgentProfile?
+  buyerProfile     BuyerProfile?
+  kycDocuments     KycDocument[]
+  sentMessages     Message[]            @relation("SentMessages")
+  receivedMessages Message[]            @relation("ReceivedMessages")
+  savedListings    SavedListing[]
+  propertyViews    PropertyView[]
+  bankAccounts     BankAccountDetails[]
+
+  // Milestone Payment Relations
+  buyerPayments         MilestonePayment[] @relation("BuyerPayments")        // Payments where user is buyer
+  agentReviewedPayments MilestonePayment[] @relation("AgentReviewedPayments") // Payments reviewed by agent
+  adminVerifiedPayments MilestonePayment[] @relation("AdminVerifiedPayments") // Payments verified by admin
+  
+  // Payment Plan Acceptance Relations
+  buyerAcceptances      PaymentPlanAcceptance[] @relation("BuyerAcceptances")
+  verifierAcceptances   PaymentPlanAcceptance[] @relation("VerifierAcceptances")
+
+  @@index([email])
+  @@index([phoneNumber])
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}
+
+
+//////////////////////////////
+// PROFILES
+//////////////////////////////
+
+model AgentProfile {
+  userId           String    @id @db.Uuid
+  licenseId        String?   @unique
+  agencyName       String?
+  isRegaVerified   Boolean   @default(false)
+  isNafathVerified Boolean   @default(false)
+  trustScore       Float     @default(0)
+  bio              String?
+  yearsExperience  Int?
+  verifiedAt       DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  properties Property[]
+
+  @@map("agent_profiles")
+}
+
+model BuyerProfile {
+  userId                 String    @id @db.Uuid
+  investmentBudgetMin    Float?
+  investmentBudgetMax    Float?
+  isNafathVerified       Boolean   @default(false)
+  preferredPropertyTypes String[]  @default([])
+  kycStatus              KycStatus @default(PENDING)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("buyer_profiles")
+}
+
+model KycDocument {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId             String    @db.Uuid
+  documentType       String
+  fileUrl            String
+  verificationStatus KycStatus @default(PENDING)
+  rejectionReason    String?
+  uploadedAt         DateTime  @default(now())
+  verifiedAt         DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([verificationStatus])
+  @@map("kyc_documents")
+}
+
+//////////////////////////////
+// REAL ESTATE
+//////////////////////////////
+
+model Developer {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @unique
+  description String?
+  logoUrl     String?
+  websiteUrl  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  property Property[]
+
+  @@index([name])
+  @@map("developers")
+}
+
+model Property {
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  listingAgentId String         @db.Uuid
+  status         PropertyStatus
+  listingPurpose ListingPurpose
+  type           ProjectType    @default(OFF_PLAN)
+  districtId     Int
+  developerId    String?        @db.Uuid
+  images         String[]       @default([])
+  totalUnits     Int?
+  availableUnits Int?
+  latitude       Float?
+  longitude      Float?
+  addressLine    String?
+  mapEmbedUrl    String?
+  location       String?
+  title          String
+  description    String?
+  price          Float
+  currency       String         @default("SAR") @db.Char(3)
+  areaSqm        Float?
+  areaSqFt       Float?
+  bedrooms       Int?
+  bathrooms      Int?
+  balconies      Int?
+  floorNumber    Int?
+  yearBuilt      Int?
+  parkingSlots   Int?           @default(1)
+  furnished      Boolean?       @default(false)
+
+  roiProjectionPercent     Float?
+  estimatedRentalIncome    Float?
+  estimatedRentalCurrency  String? @default("SAR") @db.Char(3)
+  valueApproximate         Float?
+  valueApproximateCurrency String? @default("NGN") @db.Char(3)
+
+  amenities  Json?
+  highlights String[] @default([])
+
+  views         Int       @default(0)
+  featuredUntil DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agent     AgentProfile @relation(fields: [listingAgentId], references: [userId])
+  developer Developer?   @relation(fields: [developerId], references: [id])
+
+  paymentPlans           PaymentPlan[]
+  propertyViews          PropertyView[]
+  savedBy                SavedListing[]
+  invisitor              PropertyInvisitor?
+  units                  Unit[]
+  media                  Media[]
+  bankAccount            BankAccountDetails?
+  nearbyProjects         NearbyProject[]
+  attributes             PropertyAttribute[]
+  // Add this new relation for PaymentPlanAcceptance
+  paymentPlanAcceptances PaymentPlanAcceptance[]
+
+  @@index([listingAgentId])
+  @@index([districtId])
+  @@index([status])
+  @@index([listingPurpose])
+  @@index([price])
+  @@index([createdAt])
+  @@index([developerId])
+  @@map("properties")
+}
+
+model PropertyAttribute {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId String   @db.Uuid
+  key        String
+  value      String
+  valueType  String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([propertyId, key])
+  @@map("property_attributes")
+}
+
+model Unit {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId  String  @db.Uuid
+  unitNumber  String
+  floorNumber Int?
+  title       String?
+  description String?
+
+  price        Float
+  currency     String     @default("SAR") @db.Char(3)
+  areaSqm      Float
+  areaSqFt     Float?
+  bedrooms     Int?
+  bathrooms    Int?
+  balconies    Int?
+  parkingSlots Int?       @default(1)
+  status       UnitStatus @default(AVAILABLE)
+  images       String[]   @default([])
+
+  isFeatured        Boolean @default(false)
+  isPricedOnRequest Boolean @default(false)
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  media    Media[]
+
+  @@index([propertyId])
+  @@index([status])
+  @@index([price])
+  @@map("property_units")
+}
+
+model Media {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId  String?   @db.Uuid
+  unitId      String?   @db.Uuid
+  url         String
+  type        MediaType
+  title       String?
+  description String?
+  sortOrder   Int       @default(0)
+  isPrimary   Boolean   @default(false)
+  uploadedAt  DateTime  @default(now())
+
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?     @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@index([unitId])
+  @@index([type])
+  @@map("media")
+}
+
+//////////////////////////////
+// FINANCE & MILESTONES
+//////////////////////////////
+
+model PaymentPlan {
+  id                 String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId         String  @db.Uuid
+  name               String
+  downPaymentPercent Float?
+  totalInstallments  Int?
+  description        String?
+
+  property    Property                @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  milestones  Milestone[]
+  // Add this new relation for PaymentPlanAcceptance
+  acceptances PaymentPlanAcceptance[]
+
+  @@index([propertyId])
+  @@map("payment_plans")
+}
+
+model Milestone {
+  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  planId            String           @db.Uuid
+  milestoneOrder    Int
+  description       String
+  percentageDue     Float
+  dueDate           DateTime?
+  triggerCondition  MilestoneTrigger
+  constructionStage String?
+
+  plan     PaymentPlan        @relation(fields: [planId], references: [id], onDelete: Cascade)
+  payments MilestonePayment[]
+
+  @@unique([planId, milestoneOrder])
+  @@index([planId])
+  @@map("milestones")
+}
+
+model MilestonePayment {
+  id                String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  milestoneId       String                 @db.Uuid
+  buyerId           String                 @db.Uuid
+  agentId           String?                @db.Uuid // Agent who reviews first
+  adminId           String?                @db.Uuid // Admin who verifies
+  amountPaid        Float
+  proofUrl          String
+  paidAt            DateTime               @default(now())
+  status            MilestonePaymentStatus @default(PENDING) // PENDING → AGENT_REVIEWED → VERIFIED/REJECTED
+  agentReviewedAt   DateTime?
+  verifiedAt        DateTime?
+  rejectedAt        DateTime?
+  rejectionReason   String?
+  notes             String?
+  
+  // For tracking
+  isReadByAgent     Boolean @default(false) // Agent has seen/read the payment
+  isReadByAdmin     Boolean @default(false) // Admin has seen/read the payment
+
+  // Relations - Each with unique relation names
+  milestone  Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  buyer      User      @relation("BuyerPayments", fields: [buyerId], references: [id])
+  agent      User?     @relation("AgentReviewedPayments", fields: [agentId], references: [id])
+  admin      User?     @relation("AdminVerifiedPayments", fields: [adminId], references: [id])
+
+  @@index([milestoneId])
+  @@index([buyerId])
+  @@index([agentId])
+  @@index([adminId])
+  @@index([status])
+  @@map("milestone_payments")
+}
+
+//////////////////////////////
+// USER ACTIVITY
+//////////////////////////////
+
+model SavedListing {
+  userId     String   @db.Uuid
+  propertyId String   @db.Uuid
+  savedAt    DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@id([userId, propertyId])
+  @@map("saved_listings")
+}
+
+model PropertyView {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId String   @db.Uuid
+  userId     String?  @db.Uuid
+  viewedAt   DateTime @default(now())
+  source     String?
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user     User?    @relation(fields: [userId], references: [id])
+
+  @@index([propertyId])
+  @@index([userId])
+  @@index([viewedAt])
+  @@map("property_views")
+}
+
+model Message {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  senderId    String    @db.Uuid
+  recipientId String    @db.Uuid
+  propertyId  String?   @db.Uuid
+  content     String
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  sender    User @relation("SentMessages", fields: [senderId], references: [id])
+  recipient User @relation("ReceivedMessages", fields: [recipientId], references: [id])
+
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([propertyId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+//////////////////////////////
+// PAYMENT & ADDITIONAL INFO
+//////////////////////////////
+
+model BankAccountDetails {
+  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId     String  @unique @db.Uuid
+  bankName       String
+  accountNumber  String
+  iban           String
+  accountHolder  String
+  swiftCode      String?
+  branchAddress  String?
+  additionalInfo String?
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("property_payment_banks")
+}
+
+model PropertyInvisitor {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId     String    @unique @db.Uuid
+  name           String
+  email          String?
+  phoneNumber    String?
+  relationship   String?
+  idNumber       String?
+  idType         String?
+  idExpiryDate   DateTime?
+  additionalInfo String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@map("property_invisitors")
+}
+
+model NearbyProject {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId  String  @db.Uuid
+  name        String
+  description String?
+  distanceKm  Float?
+  category    String?
+  latitude    Float?
+  longitude   Float?
+  icon        String?
+  isActive    Boolean @default(true)
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@index([category])
+  @@index([isActive])
+  @@map("nearby_projects")
+}
+
+model PaymentPlanAcceptance {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  buyerId        String   @db.Uuid
+  propertyId     String   @db.Uuid
+  paymentPlanId  String   @db.Uuid
+  acceptedAt     DateTime @default(now())
+  acceptedById   String?  @db.Uuid // Agent/Admin who verified
+  
+  // Relations with unique relation names
+  buyer          User      @relation("BuyerAcceptances", fields: [buyerId], references: [id], onDelete: Cascade)
+  property       Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  paymentPlan    PaymentPlan @relation(fields: [paymentPlanId], references: [id], onDelete: Cascade)
+  acceptedBy     User?     @relation("VerifierAcceptances", fields: [acceptedById], references: [id])
+
+  @@unique([buyerId, propertyId, paymentPlanId])
+  @@map("payment_plan_acceptances")
+}

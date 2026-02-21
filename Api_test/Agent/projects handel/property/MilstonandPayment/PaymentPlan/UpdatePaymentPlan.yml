@@ -1,0 +1,28 @@
+info:
+  name: UpdatePaymentPlan
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/v1/payment-plans/update/{{id}}"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Updated Premium Plan",
+        "downPaymentPercent": 25,
+        "description": "Updated description with better terms"
+      }
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: 04865928-a3ab-4ff5-9ad0-99f727e3bcbd
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

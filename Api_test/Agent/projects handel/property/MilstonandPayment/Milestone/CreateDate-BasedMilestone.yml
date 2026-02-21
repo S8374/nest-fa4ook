@@ -1,0 +1,26 @@
+info:
+  name: CreateDate-BasedMilestone
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/milestones/create"
+  body:
+    type: json
+    data: |-
+      {
+        "planId": "67669cbe-cf68-4c7e-a391-6f01018770e6",
+        "milestoneOrder": 1,
+        "description": "Initial Down Payment",
+        "percentageDue": 20,
+        "dueDate": "2026-03-15T00:00:00Z",
+        "triggerCondition": "DATE_BASED"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

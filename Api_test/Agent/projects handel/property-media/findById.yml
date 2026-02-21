@@ -1,0 +1,20 @@
+info:
+  name: findById
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/v1/media/{{id}}"
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: 50df592b-3193-4f5a-8907-8aaaeeb3e406
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

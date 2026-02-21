@@ -1,0 +1,20 @@
+info:
+  name: delete-singel
+  type: http
+  seq: 8
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/v1/units/delete/{{id}}"
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: 3fe57bb1-32e8-445a-ab74-0dfd959bbfa7
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

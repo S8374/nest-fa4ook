@@ -1,0 +1,27 @@
+info:
+  name: update
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/v1/media/update/{{id}}"
+  body:
+    type: json
+    data: |-
+      {
+          "title": "Updated Living Room View"
+
+      }
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: 50df592b-3193-4f5a-8907-8aaaeeb3e406
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,20 @@
+info:
+  name: delete-by-id
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/v1/property-attributes/delete/{{id}}"
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: f6933afc-36ec-4280-b6f8-2938db05c981
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

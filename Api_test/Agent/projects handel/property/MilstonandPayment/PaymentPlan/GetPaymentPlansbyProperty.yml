@@ -1,0 +1,20 @@
+info:
+  name: GetPaymentPlansbyProperty
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/v1/payment-plans/property/{{propertyId}}"
+  auth: inherit
+
+runtime:
+  variables:
+    - name: propertyId
+      value: 66698577-b3f4-41f6-8242-d2d2d5016cc0
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

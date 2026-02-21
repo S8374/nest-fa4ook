@@ -1,0 +1,7 @@
+info:
+  name: projects handel
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit

@@ -1,0 +1,24 @@
+info:
+  name: add-developer
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/developers/create"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Aldar Properties",
+        "description": "Abu Dhabi's premier real estate developer, creating master-planned communities and iconic destinations.",
+        "logoUrl": "https://example.com/logos/aldar-logo.png",
+        "websiteUrl": "https://www.aldar.com"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

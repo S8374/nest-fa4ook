@@ -1,0 +1,67 @@
+info:
+  name: create-property
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/property/create"
+  body:
+    type: json
+    data: |-
+      {
+        "listingAgentId": "315813fe-88b9-40f3-89f9-bbf1e4429df1",
+        "status": "FOR_SALE",
+        "listingPurpose": "SELL",
+        "type": "LUXURY",
+        "districtId": 1,
+        "developerId": "83a3c834-5ab5-4be7-a57b-b5d2608dd010",
+        "images": [
+          "https://example.com/image1.jpg",
+          "https://example.com/image2.jpg"
+        ],
+        "totalUnits": 10,
+        "availableUnits": 5,
+        "latitude": 24.7136,
+        "longitude": 46.6753,
+        "addressLine": "123 Luxury Tower, Riyadh",
+        "mapEmbedUrl": "https://maps.google.com/embed?params",
+        "location": "Downtown Riyadh",
+        "title": "Luxury Apartment with Sea View",
+        "description": "Beautiful luxury apartment with panoramic views",
+        "price": 2500000,
+        "currency": "SAR",
+        "areaSqm": 250,
+        "areaSqFt": 2690,
+        "bedrooms": 3,
+        "bathrooms": 4,
+        "balconies": 2,
+        "floorNumber": 15,
+        "yearBuilt": 2023,
+        "parkingSlots": 2,
+        "furnished": true,
+        "roiProjectionPercent": 8.5,
+        "estimatedRentalIncome": 180000,
+        "estimatedRentalCurrency": "SAR",
+        "valueApproximate": 2600000,
+        "valueApproximateCurrency": "SAR",
+        "amenities": {
+          "pool": true,
+          "gym": true,
+          "security": "24/7",
+          "parking": "covered"
+        },
+        "highlights": [
+          "Sea View",
+          "Smart Home",
+          "Private Elevator"
+        ],
+        "featuredUntil": "2024-12-31T23:59:59Z"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

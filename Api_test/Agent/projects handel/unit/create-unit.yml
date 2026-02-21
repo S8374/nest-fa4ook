@@ -1,0 +1,37 @@
+info:
+  name: create-unit
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/units/create"
+  body:
+    type: json
+    data: |-
+      {
+        "propertyId": "66698577-b3f4-41f6-8242-d2d2d5016cc0",
+        "unitNumber": "A-101",
+        "floorNumber": 1,
+        "title": "Luxury 1BR Apartment sex",
+        "description": "Beautiful apartment with city view",
+        "price": 850000,
+        "currency": "SAR",
+        "areaSqm": 75,
+        "areaSqFt": 807,
+        "bedrooms": 1,
+        "bathrooms": 2,
+        "balconies": 1,
+        "parkingSlots": 1,
+        "status": "AVAILABLE",
+        "images": ["https://example.com/unit1.jpg"],
+        "isFeatured": true,
+        "isPricedOnRequest": false
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

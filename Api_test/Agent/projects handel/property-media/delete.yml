@@ -1,0 +1,20 @@
+info:
+  name: delete
+  type: http
+  seq: 6
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/v1/media/{{id}}"
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: a657048b-f9cd-4f69-bec4-a679fcf7ca7a
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

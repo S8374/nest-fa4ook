@@ -1,0 +1,27 @@
+info:
+  name: update
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/v1/property-attributes/update/{{id}}"
+  body:
+    type: json
+    data: |-
+      {
+        "value": "6000",
+        "valueType": "number"
+      }
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: f6933afc-36ec-4280-b6f8-2938db05c981
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,29 @@
+info:
+  name: accept-mliston-payment-document
+  type: http
+  seq: 1
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/v1/milestone-payments/{{id}}/agent-review"
+  body:
+    type: json
+    data: |-
+      {
+        "agentId": "a75af833-0358-4c98-b78f-20d9e22d8729",
+        "isRead": true,
+        "approved": true,
+        "notes": "Documents verified, amount correct"
+      }
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: 79060848-e28b-4d7d-aec8-422fa40aff41
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

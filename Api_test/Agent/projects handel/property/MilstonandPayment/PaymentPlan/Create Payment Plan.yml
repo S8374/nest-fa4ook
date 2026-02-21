@@ -1,0 +1,25 @@
+info:
+  name: Create Payment Plan
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/payment-plans/create"
+  body:
+    type: json
+    data: |-
+      {
+        "propertyId": "66698577-b3f4-41f6-8242-d2d2d5016cc0",
+        "name": "Standard Payment Plan",
+        "downPaymentPercent": 20,
+        "totalInstallments": 24,
+        "description": "20% down payment, remaining in 24 monthly installments"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

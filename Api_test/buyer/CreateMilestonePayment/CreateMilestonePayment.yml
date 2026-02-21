@@ -1,0 +1,28 @@
+info:
+  name: CreateMilestonePayment
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/milestone-payments/create-milestone-payment"
+  body:
+    type: json
+    data: |-
+      
+      {
+        "milestoneId": "ddafbceb-4354-4e83-b2c2-51dc3869f230",
+        "buyerId": "315813fe-88b9-40f3-89f9-bbf1e4429df1",
+        "propertyId": "66698577-b3f4-41f6-8242-d2d2d5016cc0",
+        "amountPaid": 420000,
+        "proofUrl": "https://storage.example.com/payments/down-payment-proof.pdf",
+        "notes": "Initial down payment for milestone 1 - 10% of property value",
+        "paidAt": "2026-02-21T10:30:00Z"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

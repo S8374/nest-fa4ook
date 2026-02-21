@@ -1,0 +1,20 @@
+info:
+  name: get-unit-byid
+  type: http
+  seq: 9
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/v1/units/{{id}}"
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: 6e852458-588e-4421-8602-2ce52919aff4
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
